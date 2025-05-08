@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ultimate Music Player</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      background: #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px #00000055;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+    }
+
+    #searchBar {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      width: 250px;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: #374151;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px #00000055;
+    }
+
+    .player button {
+      background: #4f46e5;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .player button:hover {
+      background: #6366f1;
+    }
+
+    .playlist {
+      background: #1f2937;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px #00000033;
+    }
+
+    .playlist h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .song {
+      padding: 10px;
+      border-bottom: 1px solid #374151;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .song:hover {
+      background: #374151;
+    }
+
+    .library {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .category {
+      background: #4b5563;
+      padding: 1rem;
+      border-radius: 10px;
+      flex: 1 1 150px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .category:hover {
+      background: #6b7280;
+    }
+
+    .active {
+      background: #22c55e !important;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎧 KingMusic</h1>
+    <input type="text" id="searchBar" placeholder="Search songs...">
+  </header>
+
+  <main>
+    <div class="player">
+      <button onclick="prevSong()">⏮ Prev</button>
+      <strong id="nowPlaying">Now Playing: ---</strong>
+      <button onclick="nextSong()">Next ⏭</button>
+    </div>
+
+    <div class="playlist">
+      <h2>🎵 Playlist</h2>
+      <div id="songList"></div>
+    </div>
+
+    <h2 style="margin-top: 2rem;">🎶 Libraries</h2>
+    <div class="library">
+      <div class="category">Top Hits</div>
+      <div class="category">Chill</div>
+      <div class="category">Workout</div>
+      <div class="category">Lo-Fi</div>
+      <div class="category">Pop</div>
+      <div class="category">Hip-Hop</div>
+    </div>
+  </main>
+
+  <audio id="audioPlayer" autoplay></audio>
+
+  <script>
+    const songs = [
+      { title: "Inspiring Beat", file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+      { title: "Cool Vibes", file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+      { title: "Smooth Melody", file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+    ];
+
+    let currentSong = 0;
+    const audioPlayer = document.getElementById("audioPlayer");
+    const nowPlaying = document.getElementById("nowPlaying");
+    const songList = document.getElementById("songList");
+
+    function loadSongs() {
+      songList.innerHTML = "";
+      songs.forEach((song, index) => {
+        const songDiv = document.createElement("div");
+        songDiv.className = "song";
+        songDiv.innerHTML = `<span>${index + 1}. ${song.title}</span><span>▶</span>`;
+        songDiv.onclick = () => playSong(index);
+        songList.appendChild(songDiv);
+      });
+    }
+
+    function playSong(index) {
+      currentSong = index;
+      audioPlayer.src = songs[index].file;
+      audioPlayer.play();
+      nowPlaying.textContent = "Now Playing: " + songs[index].title;
+    }
+
+    function nextSong() {
+      currentSong = (currentSong + 1) % songs.length;
+      playSong(currentSong);
+    }
+
+    function prevSong() {
+      currentSong = (currentSong - 1 + songs.length) % songs.length;
+      playSong(currentSong);
+    }
+
+    audioPlayer.addEventListener("ended", nextSong);
+    loadSongs();
+    playSong(0);
+
+    document.getElementById("searchBar").addEventListener("input", function () {
+      const searchValue = this.value.toLowerCase();
+      const songDivs = songList.querySelectorAll(".song");
+      songs.forEach((song, i) => {
+        songDivs[i].style.display = song.title.toLowerCase().includes(searchValue) ? "flex" : "none";
+      });
+    });
+  </script>
+</body>
+</html>
